@@ -1,0 +1,18 @@
+[project]
+name = "mini-insuretech-qa-portfolio"
+version = "0.1.0"
+description = "SDET portfolio for a mini InsureTech API built with FastAPI and tested with pytest, focusing on backend API automation, integration testing, and data integrity validation."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pytest",
+    "httpx",
+    "email-validator",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = '--verbose -r a'  # Report all except passed.
