@@ -31,22 +31,21 @@ def test_create_quote_rejects_unknown_customer(client):
     assert response.json()["detail"]["message"] == "Customer does not exist."
 
 
-def test_create_quote_calculates_premium_correctly(client):
+def assert_premium(client, expected_premium, **quote_overrides):
     customer_response = client.post("/customers", json=valid_customer_payload())
     customer_id = customer_response.json()["customer_id"]
+    quote_overrides.update({"customer_id": customer_id})
 
-    payload = valid_quote_payload(
-        customer_id=customer_id,
-        vehicle_value=30000,
-        postcode="2000",
-        driver_age=35,
-        has_previous_claims=False,
-    )
+    payload = valid_quote_payload(**quote_overrides)
 
     response = client.post("/quotes", json=payload)
 
     assert response.status_code == 201
-    assert response.json()["premium"] == 800.0
+    assert response.json()["premium"] == expected_premium
+
+
+def test_create_quote_calculates_premium_correctly(client):
+    assert_premium(client, 800.0)
 
 
 @pytest.mark.parametrize("age, expected_premium", [
@@ -54,21 +53,7 @@ def test_create_quote_calculates_premium_correctly(client):
     (25,  800.0),
 ])
 def test_create_quote_calculates_premium_with_varied_ages(client, age, expected_premium):
-    customer_response = client.post("/customers", json=valid_customer_payload())
-    customer_id = customer_response.json()["customer_id"]
-
-    payload = valid_quote_payload(
-        customer_id=customer_id,
-        vehicle_value=30000,
-        postcode="2000",
-        driver_age=age,
-        has_previous_claims=False,
-    )
-
-    response = client.post("/quotes", json=payload)
-
-    assert response.status_code == 201
-    assert response.json()["premium"] == expected_premium
+    assert_premium(client, expected_premium, driver_age=age)
 
 
 @pytest.mark.parametrize("postcode, expected_premium", [
@@ -76,21 +61,7 @@ def test_create_quote_calculates_premium_with_varied_ages(client, age, expected_
     ('2000', 800.0),
 ])
 def test_create_quote_calculates_premium_with_varied_postcodes(client, postcode, expected_premium):
-    customer_response = client.post("/customers", json=valid_customer_payload())
-    customer_id = customer_response.json()["customer_id"]
-
-    payload = valid_quote_payload(
-        customer_id=customer_id,
-        vehicle_value=30000,
-        postcode=postcode,
-        driver_age=35,
-        has_previous_claims=False,
-    )
-
-    response = client.post("/quotes", json=payload)
-
-    assert response.status_code == 201
-    assert response.json()["premium"] == expected_premium
+    assert_premium(client, expected_premium, postcode=postcode)
 
 
 @pytest.mark.parametrize("has_previous_claims, expected_premium", [
@@ -98,21 +69,7 @@ def test_create_quote_calculates_premium_with_varied_postcodes(client, postcode,
     (True,  950.0),
 ])
 def test_create_quote_calculates_premium_with_varied_previous_claims(client, has_previous_claims, expected_premium):
-    customer_response = client.post("/customers", json=valid_customer_payload())
-    customer_id = customer_response.json()["customer_id"]
-
-    payload = valid_quote_payload(
-        customer_id=customer_id,
-        vehicle_value=30000,
-        postcode='1000',
-        driver_age=35,
-        has_previous_claims=has_previous_claims,
-    )
-
-    response = client.post("/quotes", json=payload)
-
-    assert response.status_code == 201
-    assert response.json()["premium"] == expected_premium
+    assert_premium(client, expected_premium, has_previous_claims=has_previous_claims, postcode='1000')
 
 
 def test_get_quote_returns_created_quote(client):
