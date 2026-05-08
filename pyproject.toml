@@ -10,9 +10,15 @@ dependencies = [
     "pytest",
     "httpx",
     "email-validator",
+    "pytest-html",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = '--verbose -r a'  # Report all except passed.
+
+# --verbose: show test names
+# -r a: report all except passed
+# --html: generate HTML report
+# --self-contained-html: embed CSS/JS in HTML
+addopts = "--verbose -r a --html=reports/report.html --self-contained-html"
