@@ -72,6 +72,39 @@ def test_create_quote_calculates_premium_with_varied_previous_claims(client, has
     assert_premium(client, expected_premium, has_previous_claims=has_previous_claims, postcode='1000')
 
 
+@pytest.mark.parametrize("postcode", [
+    '100',
+    '10000',
+    'ABCD',
+])
+def test_create_quote_rejects_invalid_postcodes(client, postcode):
+    customer_response = client.post("/customers", json=valid_customer_payload())
+    customer_id = customer_response.json()["customer_id"]
+    quote_overrides = {"customer_id": customer_id, "postcode": postcode}
+
+    payload = valid_quote_payload(**quote_overrides)
+
+    response = client.post("/quotes", json=payload)
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize("vehicle_value", [
+    0,
+    -30000,
+])
+def test_create_quote_rejects_invalid_vehicle_values(client, vehicle_value):
+    customer_response = client.post("/customers", json=valid_customer_payload())
+    customer_id = customer_response.json()["customer_id"]
+    quote_overrides = {"customer_id": customer_id, "vehicle_value": vehicle_value}
+
+    payload = valid_quote_payload(**quote_overrides)
+
+    response = client.post("/quotes", json=payload)
+
+    assert response.status_code == 422
+
+
 def test_get_quote_returns_created_quote(client):
     customer_response = client.post("/customers", json=valid_customer_payload())
     customer_id = customer_response.json()["customer_id"]
