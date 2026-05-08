@@ -21,7 +21,7 @@ class QuoteCreateRequest(BaseModel):
     customer_id: str
     product_type: str
     vehicle_value: float = Field(gt=0)
-    postcode: str = Field(min_length=4, max_length=4)
+    postcode: str = Field(pattern=r"^\d{4}$")
     driver_age: int = Field(ge=18)
     has_previous_claims: bool
 
