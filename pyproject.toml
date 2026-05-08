@@ -11,6 +11,12 @@ dependencies = [
     "httpx",
     "email-validator",
     "pytest-html",
+    "pytest-cov",
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
 ]
 
 [tool.pytest.ini_options]
@@ -21,4 +27,4 @@ pythonpath = ["."]
 # -r a: report all except passed
 # --html: generate HTML report
 # --self-contained-html: embed CSS/JS in HTML
-addopts = "--verbose -r a --html=reports/report.html --self-contained-html"
+addopts = "--verbose -r a --html=reports/report.html --self-contained-html --cov=app --cov-report=term-missing --cov-report=html:reports/coverage"
