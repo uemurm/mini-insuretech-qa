@@ -109,9 +109,10 @@ def test_get_quote_returns_created_quote(client):
     customer_response = client.post("/customers", json=valid_customer_payload())
     customer_id = customer_response.json()["customer_id"]
 
+    payload = valid_quote_payload(customer_id=customer_id)
     create_quote_response = client.post(
         "/quotes",
-        json=valid_quote_payload(customer_id=customer_id),
+        json=payload,
     )
     quote_id = create_quote_response.json()["quote_id"]
 
@@ -120,6 +121,11 @@ def test_get_quote_returns_created_quote(client):
     assert response.status_code == 200
     assert response.json()["quote_id"] == quote_id
     assert response.json()["customer_id"] == customer_id
+    assert response.json()["product_type"] == payload["product_type"]
+    assert response.json()["vehicle_value"] == payload["vehicle_value"]
+    assert response.json()["postcode"] == payload["postcode"]
+    assert response.json()["driver_age"] == payload["driver_age"]
+    assert response.json()["has_previous_claims"] == payload["has_previous_claims"]
 
 
 def test_get_unknown_quote_returns_404(client):
