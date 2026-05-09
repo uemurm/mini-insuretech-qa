@@ -15,15 +15,13 @@ jobs:
         run: pip install uv
       - name: Install dependencies
         run: uv sync
-
-      - name: Run API tests
-        run: uv run pytest -m "not ui"
-      - name: Start the App
-        run: uv run uvicorn app.main:app & sleep 2
       - name: Install Playwright browsers
         run: uv run playwright install chromium
-      - name: Run UI tests
-        run: uv run pytest -m ui
+
+      - name: Start the App
+        run: uv run uvicorn app.main:app & sleep 2
+      - name: Run tests
+        run: uv run pytest
 
       - name: Upload test report
         if: always()
