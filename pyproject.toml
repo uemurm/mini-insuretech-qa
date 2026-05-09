@@ -12,6 +12,7 @@ dependencies = [
     "email-validator",
     "pytest-html",
     "pytest-cov",
+    "pytest-playwright",
 ]
 
 [dependency-groups]
@@ -28,3 +29,7 @@ pythonpath = ["."]
 # --html: generate HTML report
 # --self-contained-html: embed CSS/JS in HTML
 addopts = "--verbose -r a --html=reports/report.html --self-contained-html --cov=app --cov-report=term-missing --cov-report=html:reports/coverage"
+
+markers = [
+    "ui: marks tests as UI tests requiring a running server",
+]
